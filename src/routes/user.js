@@ -3,6 +3,21 @@ const { Estado, Usuario } = require("../db");
 const userRouter = require("express").Router();
 
 userRouter.get("/", async (req, res) => {
+  const { user } = req.query;
+
+  if (user) {
+    const stateUser = await Usuario.findOne({
+      where: {
+        user,
+      },
+      include: [{ model: Estado, required: false }],
+    });
+
+    if (stateUser) {
+      return res.json({ state: stateUser.Estado.status });
+    }
+  }
+
   res.json(await Usuario.findAll({ attributes: ["id", "user"] }));
 });
 
